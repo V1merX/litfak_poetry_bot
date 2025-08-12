@@ -1,0 +1,54 @@
+services:
+  bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: bot
+    restart: unless-stopped
+    environment:
+      - CONFIG_PATH=/configs/config.json
+    volumes:
+      - ./configs:/configs
+    depends_on:
+      - postgresql
+    networks:
+      - bot-network
+
+  postgresql:
+    image: postgres:17
+    container_name: postgresql
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: litfak_bot
+      POSTGRES_DB: litfak_bot_db
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - bot-network
+
+  pgadmin:
+    image: dpage/pgadmin4:8.5
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: example
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgresql
+    networks:
+      - bot-network
+
+volumes:
+  pg_data:
+  pgadmin_data:
+
+networks:
+  bot-network:
+    driver: bridge
