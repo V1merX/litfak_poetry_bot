@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/mymmrac/telego"
 	th "github.com/mymmrac/telego/telegohandler"
 	tu "github.com/mymmrac/telego/telegoutil"
@@ -25,9 +23,10 @@ const (
 )
 
 func Start(ctx *th.Context, update telego.Update) error {
+	// TODO: Add context
 	_, _ = ctx.Bot().SendMessage(ctx, tu.Message(
 		tu.ID(update.Message.Chat.ID),
-		fmt.Sprintf("%s", startMessage),
+		startMessage,
 	))
 	return nil
 }

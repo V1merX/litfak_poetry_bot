@@ -7,4 +7,5 @@ import (
 
 func (b *bot) InitHandlers() {
 	b.h.Handle(commands.Start, th.CommandEqual("start"))
+	b.h.Handle(commands.Unknown, th.AnyCommand())
 }
