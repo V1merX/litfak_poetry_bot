@@ -4,6 +4,8 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/V1merX/litfak_poetry_bot/internal/repositories"
+	"github.com/V1merX/litfak_poetry_bot/internal/services"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/mymmrac/telego"
 	th "github.com/mymmrac/telego/telegohandler"
@@ -58,8 +60,18 @@ func (b *bot) Start() error {
 	}
 	b.h = handler
 
+	userRepository := repositories.NewUserRepository(b.log, b.storage)
+	userService := services.NewUserService(b.log, userRepository)
+
+	poemRepository := repositories.NewPoemRepository(b.log, b.storage)
+	poemService := services.NewPoemService(b.log, poemRepository)
+
 	b.log.Debug("initializing handlers")
 	b.InitHandlers()
+
+	go func() {
+		b.WorkerStart(userService, poemService)
+	}()
 
 	go func() {
 		b.log.Info("starting bot handler")

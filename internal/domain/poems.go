@@ -1,6 +1,8 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 type Poem struct {
 	PoemID    int64     `json:"poem_id"`
@@ -11,4 +13,5 @@ type Poem struct {
 	IsSent    bool      `json:"is_sent"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Author    Author    `json:"author"`
 }

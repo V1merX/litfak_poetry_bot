@@ -18,6 +18,7 @@ type UserService interface {
 const (
 	startMessage = `
 	📚 Готовься к ЕГЭ по литературе с умом!
+
 Привет! Здесь ты сможешь легко и эффективно запомнить все нужные стихотворения для ЕГЭ.
 
 Как это работает?
@@ -52,14 +53,14 @@ func Start(ctx *th.Context, update telego.Update, userService UserService) error
 	nCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	_, err := userService.NewUser(ctx, &domain.User{
+	userID, err := userService.NewUser(ctx, &domain.User{
 		TelegramID: update.Message.From.ID,
 		ChatID:     update.Message.Chat.ID,
 		UserName:   update.Message.From.Username,
 		FirstName:  update.Message.From.FirstName,
 		LastName:   update.Message.From.LastName,
 	})
-	if err != nil {
+	if err != nil && userID > 0 {
 		_, _ = ctx.Bot().SendMessage(nCtx, tu.Message(
 			tu.ID(update.Message.Chat.ID),
 			errorMessage,

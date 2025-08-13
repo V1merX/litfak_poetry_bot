@@ -2,13 +2,21 @@ package main
 
 import (
 	"context"
+	"embed"
 	"log/slog"
 	"os"
 
 	"github.com/V1merX/litfak_poetry_bot/internal/bot"
 	"github.com/V1merX/litfak_poetry_bot/internal/config"
+	"github.com/V1merX/litfak_poetry_bot/internal/migrator"
 	"github.com/V1merX/litfak_poetry_bot/internal/storage/postgresql"
+	"github.com/jackc/pgx/v5/stdlib"
 )
+
+const migrationsDir = "migrations"
+
+//go:embed migrations/*.sql
+var MigrationsFS embed.FS
 
 var log *slog.Logger
 
@@ -35,6 +43,14 @@ func run() error {
 	if err != nil {
 		log.Error("failed to connect to database")
 		return err
+	}
+
+	migrator := migrator.MustGetNewMigrator(MigrationsFS, migrationsDir)
+
+	db := stdlib.OpenDBFromPool(pool)
+	err = migrator.ApplyMigrations(db)
+	if err != nil {
+		panic(err)
 	}
 
 	bot := bot.NewBot(log, cfg.Telegram.BotToken, pool)

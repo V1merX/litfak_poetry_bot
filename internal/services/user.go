@@ -12,6 +12,7 @@ type UserRepository interface {
 	GetByTelegramID(ctx context.Context, telegramID int64) (*domain.User, error)
 	GetByUserID(ctx context.Context, userID int64) (*domain.User, error)
 	NewUser(ctx context.Context, user *domain.User) (int64, error)
+	GetAllChatIDs(ctx context.Context) (*[]domain.User, error)
 }
 
 type UserService struct {
@@ -82,4 +83,22 @@ func (s *UserService) NewUser(ctx context.Context, user *domain.User) (int64, er
 	}
 
 	return userID, nil
+}
+
+func (s *UserService) GetAllChatIDs(ctx context.Context) (*[]domain.User, error) {
+	const op = "internal.services.UserService.GetAllChatIDs"
+
+	nCtx, cancel := context.WithTimeout(ctx, 4*time.Second)
+	defer cancel()
+
+	s.log = s.log.With(
+		"op", op,
+	)
+
+	users, err := s.rep.GetAllChatIDs(nCtx)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
