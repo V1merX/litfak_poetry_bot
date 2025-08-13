@@ -11,6 +11,7 @@ import (
 	"github.com/mymmrac/telego"
 )
 
+//go:generate go run github.com/vektra/mockery/v3@latest
 type UserService interface {
 	GetAllChatIDs(ctx context.Context) (*[]domain.User, error)
 }
