@@ -1,38 +1,32 @@
 # Build stage
 FROM golang:1.24-alpine AS builder
 
-# Set necessary environment variables
-ENV GO111MODULE=on \
-    CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64
-
-# Create and change to the app directory
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod ./
-
-# Download all dependencies
+# Copy go mod files
+COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the source code
+# Copy source code
 COPY . .
 
 # Build the application
-RUN go build -o bot ./cmd/bot
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/bin/bot ./cmd/bot
 
 # Final stage
 FROM alpine:latest
 
-# Install CA certificates for HTTPS
+WORKDIR /app
+
+# Copy binary from builder
+COPY --from=builder /app/bin/bot /app/bot
+COPY --from=builder /app/configs /app/configs
+
+# Install CA certificates
 RUN apk --no-cache add ca-certificates
 
-# Set working directory
-WORKDIR /app/cmd/bot
+# Run as non-root user
+RUN adduser -D -g '' appuser
+USER appuser
 
-# Copy the binary from builder
-COPY --from=builder /app/bot .
-
-# Command to run the executable
-CMD ["./bot"]
+CMD ["/app/bot"]

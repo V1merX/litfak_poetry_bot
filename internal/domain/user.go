@@ -5,6 +5,8 @@ import "time"
 type User struct {
 	UserID     int64     `json:"user_id"`
 	TelegramID int64     `json:"telegram_id"`
+	ChatID     int64     `json:"chat_id"`
+	UserName   string    `json:"user_name"`
 	FirstName  string    `json:"first_name"`
 	LastName   string    `json:"last_name"`
 	CreatedAt  time.Time `json:"created_at"`

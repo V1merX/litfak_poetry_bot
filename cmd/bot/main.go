@@ -13,7 +13,9 @@ import (
 var log *slog.Logger
 
 func init() {
-	log = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	log = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+	}))
 }
 
 func main() {
@@ -35,9 +37,8 @@ func run() error {
 		return err
 	}
 
-	_ = pool
+	bot := bot.NewBot(log, cfg.Telegram.BotToken, pool)
 
-	bot := bot.NewBot(log, cfg.Telegram.BotToken)
 	if err := bot.Start(); err != nil {
 		return err
 	}

@@ -1,14 +1,14 @@
 services:
   bot:
     build:
-      context: ./bot
+      context: .
       dockerfile: Dockerfile
-    container_name: bot
+    container_name: litfak-bot
     restart: unless-stopped
     environment:
-      - CONFIG_PATH=/configs/config.json
+      - CONFIG_PATH=/app/configs/config.json
     volumes:
-      - ./configs:/configs
+      - ./configs:/app/configs:ro
     depends_on:
       - postgresql
     networks:
