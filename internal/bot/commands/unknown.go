@@ -1,6 +1,9 @@
 package commands
 
 import (
+	"context"
+	"time"
+
 	"github.com/mymmrac/telego"
 	th "github.com/mymmrac/telego/telegohandler"
 	tu "github.com/mymmrac/telego/telegoutil"
@@ -21,8 +24,10 @@ const (
 )
 
 func Unknown(ctx *th.Context, update telego.Update) error {
-	// TODO: Add context
-	_, err := ctx.Bot().SendMessage(ctx, tu.Message(
+	nCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	_, err := ctx.Bot().SendMessage(nCtx, tu.Message(
 		tu.ID(update.Message.Chat.ID),
 		unknownCommandMessage,
 	).WithParseMode(telego.ModeMarkdown))

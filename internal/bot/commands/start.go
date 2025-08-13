@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"time"
 
 	"github.com/V1merX/litfak_poetry_bot/internal/domain"
 	"github.com/mymmrac/telego"
@@ -48,6 +49,9 @@ const (
 )
 
 func Start(ctx *th.Context, update telego.Update, userService UserService) error {
+	nCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
 	_, err := userService.NewUser(ctx, &domain.User{
 		TelegramID: update.Message.From.ID,
 		ChatID:     update.Message.Chat.ID,
@@ -56,15 +60,14 @@ func Start(ctx *th.Context, update telego.Update, userService UserService) error
 		LastName:   update.Message.From.LastName,
 	})
 	if err != nil {
-		_, _ = ctx.Bot().SendMessage(ctx, tu.Message(
+		_, _ = ctx.Bot().SendMessage(nCtx, tu.Message(
 			tu.ID(update.Message.Chat.ID),
 			errorMessage,
 		))
 		return err
 	}
 
-	// TODO: Add context
-	_, _ = ctx.Bot().SendMessage(ctx, tu.Message(
+	_, _ = ctx.Bot().SendMessage(nCtx, tu.Message(
 		tu.ID(update.Message.Chat.ID),
 		startMessage,
 	))
