@@ -57,7 +57,7 @@ func (s *UserService) GetByUserID(ctx context.Context, userID int64) (*domain.Us
 		"user_id", userID,
 	)
 
-	user, err := s.rep.GetByTelegramID(nCtx, userID)
+	user, err := s.rep.GetByUserID(nCtx, userID)
 	if err != nil {
 		return nil, err
 	}

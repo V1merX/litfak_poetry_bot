@@ -44,18 +44,20 @@ func TestPoemService_GetActualPoem(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		mockRepo := mocks.NewMockPoemRepository(ctrl)
-		mockRepo.EXPECT().
-			GetActualPoem(gomock.Any()).
-			Return(c.expectedPoem, c.err).
-			Times(1)
+		t.Run(c.name, func(t *testing.T) {
+			mockRepo := mocks.NewMockPoemRepository(ctrl)
+			mockRepo.EXPECT().
+				GetActualPoem(gomock.Any()).
+				Return(c.expectedPoem, c.err).
+				Times(1)
 
-		service := NewPoemService(slog.Default(), mockRepo)
+			service := NewPoemService(slog.Default(), mockRepo)
 
-		poem, err := service.GetActualPoem(context.Background())
+			poem, err := service.GetActualPoem(context.Background())
 
-		assert.Equal(t, c.err, err)
-		assert.Equal(t, c.expectedPoem, poem)
+			assert.Equal(t, c.err, err)
+			assert.Equal(t, c.expectedPoem, poem)
+		})
 	}
 }
 
@@ -84,16 +86,18 @@ func TestPoemService_UpdateStatusSentPoem(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		mockRepo := mocks.NewMockPoemRepository(ctrl)
-		mockRepo.EXPECT().
-			UpdateStatusSentPoem(gomock.Any(), c.poemID, c.isSent).
-			Return(c.err).
-			Times(1)
+		t.Run(c.name, func(t *testing.T) {
+			mockRepo := mocks.NewMockPoemRepository(ctrl)
+			mockRepo.EXPECT().
+				UpdateStatusSentPoem(gomock.Any(), c.poemID, c.isSent).
+				Return(c.err).
+				Times(1)
 
-		service := NewPoemService(slog.Default(), mockRepo)
+			service := NewPoemService(slog.Default(), mockRepo)
 
-		err := service.UpdateStatusSentPoem(context.Background(), c.poemID, c.isSent)
+			err := service.UpdateStatusSentPoem(context.Background(), c.poemID, c.isSent)
 
-		assert.Equal(t, c.err, err)
+			assert.Equal(t, c.err, err)
+		})
 	}
 }
